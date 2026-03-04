@@ -50,6 +50,9 @@ function App() {
     transcriber.clearTranscript();
     if (uploadedFile) URL.revokeObjectURL(uploadedFile.url);
     setUploadedFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   const activeAudioUrl = audioUrl || uploadedFile?.url;
