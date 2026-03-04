@@ -16,12 +16,17 @@ export type WorkerMessage =
 // We store the pipeline promise to prevent multiple concurrent loads
 class PipelineFactory {
     static task: any = 'automatic-speech-recognition';
-    static model = 'Xenova/whisper-tiny';
+    static currentModel: string | null = null;
     static instance: any = null;
 
-    static async getInstance(progress_callback: any) {
+    static async getInstance(progress_callback: any, model: string = 'Xenova/whisper-tiny') {
+        if (this.currentModel !== model) {
+            this.instance = null;
+            this.currentModel = model;
+        }
+
         if (this.instance === null) {
-            this.instance = await pipeline(this.task, this.model, {
+            this.instance = await pipeline(this.task, model, {
                 progress_callback,
                 device: 'webgpu', // Will fallback to wasm if WebGPU is not supported
                 dtype: {
@@ -48,7 +53,7 @@ self.addEventListener('message', async (event: MessageEvent<WorkerMessage>) => {
                         status: 'progress',
                         progress: data
                     });
-                });
+                }, message.payload.model);
 
                 self.postMessage({ status: 'ready' });
             } catch (err: any) {
@@ -61,7 +66,8 @@ self.addEventListener('message', async (event: MessageEvent<WorkerMessage>) => {
             try {
                 self.postMessage({ status: 'processing' });
 
-                const transcriber = await PipelineFactory.getInstance(null);
+                // Use the already loaded model. Fallback to tiny if not defined.
+                const transcriber = await PipelineFactory.getInstance(null, PipelineFactory.currentModel || 'Xenova/whisper-tiny');
 
                 // Run inference
                 // Whisper requires 16kHz audio, we assume it's already resampled by the main thread

@@ -203,6 +203,29 @@ function App() {
           className="w-full glass-panel rounded-3xl p-6 sm:p-8 flex flex-col min-h-[400px] border border-white/10"
         >
 
+          {/* Model Selection */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-8 w-full">
+            <label htmlFor="model-select" className="text-sm font-medium text-slate-300">
+              Precisión del Modelo:
+            </label>
+            <div className="relative">
+              <select
+                id="model-select"
+                value={transcriber.selectedModel}
+                onChange={(e) => transcriber.changeModel(e.target.value)}
+                disabled={isRecording || transcriber.isBusy || transcriber.isModelLoading}
+                className="appearance-none bg-white/5 border border-white/10 text-white text-sm rounded-xl px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer"
+              >
+                <option value="Xenova/whisper-tiny" className="bg-slate-900 text-white">Tiny (Más rápido, ~39MB)</option>
+                <option value="Xenova/whisper-base" className="bg-slate-900 text-white">Base (Equilibrado, ~73MB)</option>
+                <option value="Xenova/whisper-small" className="bg-slate-900 text-white">Small (Más preciso, ~241MB)</option>
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
+                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
+              </div>
+            </div>
+          </div>
+
           {/* Controls */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-4 md:gap-8 mb-16 w-full max-w-2xl mx-auto">
             <AnimatePresence mode="wait">
@@ -362,7 +385,7 @@ function App() {
         >
           <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-slate-300">
             <Box className="w-3.5 h-3.5 text-blue-400" />
-            <span>Modelo: <strong className="text-white">Xenova/whisper-tiny</strong></span>
+            <span>Modelo: <strong className="text-white">{transcriber.selectedModel}</strong></span>
           </div>
 
           <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-slate-300">

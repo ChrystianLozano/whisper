@@ -10,6 +10,7 @@ export interface TranscriberData {
 }
 
 export function useTranscriber() {
+    const [selectedModel, setSelectedModel] = useState<string>('Xenova/whisper-tiny');
     const [data, setData] = useState<TranscriberData>({
         isBusy: false,
         isModelLoading: false,
@@ -87,11 +88,11 @@ export function useTranscriber() {
         }
     }, []);
 
-    const loadModel = useCallback(() => {
+    const loadModel = useCallback((modelName: string = 'Xenova/whisper-tiny') => {
         if (worker.current) {
             worker.current.postMessage({
                 type: 'LOAD',
-                payload: { model: 'Xenova/whisper-tiny' }
+                payload: { model: modelName }
             } as WorkerMessage);
         }
     }, []);
@@ -100,10 +101,18 @@ export function useTranscriber() {
         setData(d => ({ ...d, text: '', chunks: [], progressItems: [] }));
     }, []);
 
+    const changeModel = useCallback((newModel: string) => {
+        setSelectedModel(newModel);
+        setData(d => ({ ...d, isModelLoading: true, progressItems: [] }));
+        loadModel(newModel);
+    }, [loadModel]);
+
     return {
         ...data,
         startTranscription,
         loadModel,
-        clearTranscript
+        clearTranscript,
+        selectedModel,
+        changeModel
     };
 }
