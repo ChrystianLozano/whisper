@@ -96,9 +96,14 @@ export function useTranscriber() {
         }
     }, []);
 
+    const clearTranscript = useCallback(() => {
+        setData(d => ({ ...d, text: '', chunks: [], progressItems: [] }));
+    }, []);
+
     return {
         ...data,
         startTranscription,
-        loadModel
+        loadModel,
+        clearTranscript
     };
 }

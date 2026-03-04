@@ -36,6 +36,7 @@ function App() {
     if (!file) return;
 
     clearAudio();
+    transcriber.clearTranscript();
     if (uploadedFile) URL.revokeObjectURL(uploadedFile.url);
 
     setUploadedFile({
@@ -46,6 +47,7 @@ function App() {
 
   const clearAll = () => {
     clearAudio();
+    transcriber.clearTranscript();
     if (uploadedFile) URL.revokeObjectURL(uploadedFile.url);
     setUploadedFile(null);
   };
